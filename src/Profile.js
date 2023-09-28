@@ -1,10 +1,22 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { Row, Form, Button, Card, ListGroup, Col } from "react-bootstrap";
-import { create as ipfsHttpClient } from "ipfs-http-client";
-import { storeImages } from "./utils/uploadToPinata";
+import { create } from "ipfs-http-client";
 
-const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+const projectId = "";
+const projectSecret = "";
+const auth =
+  "Basic " + Buffer.from(projectId + ":" + projectSecret).toString("base64");
+
+const client = await create({
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https",
+  apiPath: "/api/v0",
+  headers: {
+    authorization: auth,
+  },
+});
 
 const App = ({ contract }) => {
   const [profile, setProfile] = useState("");
@@ -46,8 +58,8 @@ const App = ({ contract }) => {
     if (typeof file !== "undefined") {
       try {
         console.log(file);
-        // const result = await client.add(file);
-        // setAvatar(`https://ipfs.infura.io/ipfs/${result.path}`);
+        const result = await client.add(file);
+        setAvatar(`https://ipfs.infura.io/ipfs/${result.path}`);
       } catch (error) {
         console.log("ipfs image upload error: ", error);
       }
